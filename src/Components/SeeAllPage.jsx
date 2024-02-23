@@ -5,15 +5,14 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Image,
-  FlatList,
-  SafeAreaView,
+  ScrollView,
 } from "react-native";
 import useApiStore from "../Zustand/store";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
 const NewArrivals = () => {
-  const navigation = useNavigation()
-  const { newArrivals, loading, error, setNewArrivals, setLoading, setError } =
+  const navigation = useNavigation();
+  const { seeAll, loading, error, setSeeAll, setLoading, setError } =
     useApiStore();
   const [isMounted, setIsMounted] = useState(true); // Ensure component is mounted
 
@@ -25,15 +24,16 @@ const NewArrivals = () => {
         {
           method: "GET",
           headers: {
-            'X-RapidAPI-Key': '4c6fe536b5mshc3ff65ebf0c23b9p1faa7djsn653e0d21fb96',
-            'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com'
-          }
+            "X-RapidAPI-Key":
+              "4c6fe536b5mshc3ff65ebf0c23b9p1faa7djsn653e0d21fb96",
+            "X-RapidAPI-Host": "real-time-product-search.p.rapidapi.com",
+          },
         }
       );
 
       const data = await response.json();
       if (isMounted) {
-        setNewArrivals(data);
+        setSeeAll(data);
       }
     } catch (error) {
       if (isMounted) {
@@ -55,7 +55,7 @@ const NewArrivals = () => {
   }, []); // Empty dependency array ensures useEffect runs only once when component mounts
 
   if (loading) {
-    return <ActivityIndicator className="mt-5" />;
+    return <ActivityIndicator className="mt-24" />;
   }
 
   if (error) {
@@ -72,23 +72,25 @@ const NewArrivals = () => {
     // Otherwise, return the entire title
     return title;
   };
- 
 
   return (
-    <SafeAreaView>
-      <View className="mt-6 flex flex-1 justify-between flex-row">
-        <Text className="text-xl font-bold">New Arrivals</Text>
-        <Text style={{ color: "#5B9EE1" }} onPress={()=>navigation.navigate('See')} >See All</Text>
+    <ScrollView className="mx-4">
+      <View className="mt-10">
+        <Text className="text-xl font-bold">All Products</Text>
       </View>
-     <View className="mt-6 ">
-        {newArrivals?.data &&
-          newArrivals.data.map((item, index) => (
-             <View
+      <View className="mt-2 ">
+        {seeAll?.data &&
+          seeAll.data.map((item, index) => (
+            <View
               key={index}
-              className="bg-white rounded-lg flex flex-row my-2 items-center justify-between"
+              className="bg-white rounded-lg flex flex-row my-2"
             >
-              <TouchableOpacity  onPress={() => navigation.navigate("Details", { productId: item.product_id })}>
-                <View className="flex flex-row ">
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("Details", { productId: item.product_id })
+                }
+              >
+                <View className="flex flex-row">
                   <View>
                     <Text
                       className="mx-4 text-md mt-4"
@@ -120,7 +122,7 @@ const NewArrivals = () => {
             </View>
           ))}
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 

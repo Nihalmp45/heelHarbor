@@ -8,9 +8,7 @@ import {
 } from "react-native";
 import React, { useEffect } from "react";
 import useApiStore from "../Zustand/store";
-import { useNavigation } from '@react-navigation/native';
-
-
+import { useNavigation } from "@react-navigation/native";
 
 const MainPageContent = () => {
   const navigation = useNavigation();
@@ -28,11 +26,10 @@ const MainPageContent = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          "https://real-time-product-search.p.rapidapi.com/search?q=shoes&page=1",
+          "https://real-time-product-search.p.rapidapi.com/search?q=shoes",
           {
-            method: "GET",
             headers: {
-              'X-RapidAPI-Key': 'fa12f0226bmshc08e210014aeac0p190b80jsn0d9b43a24e5f',
+              'X-RapidAPI-Key': '4c6fe536b5mshc3ff65ebf0c23b9p1faa7djsn653e0d21fb96',
               'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com'
             },
           }
@@ -75,7 +72,7 @@ const MainPageContent = () => {
     <>
       <View className="mt-6 flex flex-1 justify-between flex-row">
         <Text className="text-xl font-bold">Popular Shoes</Text>
-        <Text style={{ color: "#5B9EE1" }}>See All</Text>
+        <Text style={{ color: "#5B9EE1" }} onPress={()=>navigation.navigate('See')}>See All</Text>
       </View>
       <View className="mt-6 ">
         <FlatList
@@ -83,9 +80,13 @@ const MainPageContent = () => {
           data={popularShoes?.data || []}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <View className="bg-white rounded-lg flex flex-row mx-2 " >
-              <TouchableOpacity onPress={() => navigation.navigate("Details", { productId: item.id })}>
-                <View className='flex align-middle justify-center mx-3 my-3 w-12 rounded-lg' >
+            <View className="bg-white rounded-lg flex flex-row mx-2 ">
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("Details", { productId: item.product_id })
+                }
+              >
+                <View className="flex align-middle justify-center mx-3 my-3 w-12 rounded-lg">
                   <Image
                     source={{ uri: item.product_photos[0] }}
                     style={{ width: 100, height: 130 }}
@@ -107,7 +108,6 @@ const MainPageContent = () => {
           )}
         />
       </View>
-     
     </>
   );
 };

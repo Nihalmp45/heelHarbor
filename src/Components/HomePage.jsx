@@ -4,26 +4,24 @@ import {
   SafeAreaView,
   Text,
   TouchableOpacity,
-  Button,
 } from "react-native";
 import React from "react";
 
 const HomePage = ({ navigation }) => {
   return (
     <SafeAreaView>
-      <View className="w-screen h-screen flex ">
+      <View className="w-screen h-screen flex" >
         <Image
-          
           source={require("../../assets/Images/Home-page-background.png")}
         />
         <View className="mx-4">
           <Text className="text-5xl font-bold">Fashion is At Your Feet</Text>
-          <Text className="mt-1 text-2xl text-gray-300">
+          <Text className="mt-4 text-2xl text-gray-400">
             Unleash your heel here...
           </Text>
           <TouchableOpacity
             onPress={() => navigation.navigate("Main")}
-            className="mt-4 bg-blue-300 p-5 pl-28 rounded-3xl"
+            className="mt-14 bg-blue-300 p-5 pl-28 rounded-3xl"
           >
             <Text className="text-white text-xl ">Get Started</Text>
           </TouchableOpacity>
