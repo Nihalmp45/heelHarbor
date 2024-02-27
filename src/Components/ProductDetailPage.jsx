@@ -24,7 +24,7 @@ const ProductDetailsPage = ({ route }) => {
         "https://real-time-product-search.p.rapidapi.com/product-details",
         {
           headers: {
-            'X-RapidAPI-Key': '4c6fe536b5mshc3ff65ebf0c23b9p1faa7djsn653e0d21fb96',
+            'X-RapidAPI-Key': '06832540c9msh0dcb7cb770bcbf6p1cc6b7jsn22fae4472ec8',
             'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com'
           },
           params: {

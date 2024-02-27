@@ -9,12 +9,21 @@ import {
   SafeAreaView,
 } from "react-native";
 import useApiStore from "../Zustand/store";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
+import Icons from "react-native-vector-icons/FontAwesome";
 
 const NewArrivals = () => {
-  const navigation = useNavigation()
-  const { newArrivals, loading, error, setNewArrivals, setLoading, setError } =
-    useApiStore();
+  const navigation = useNavigation();
+  const {
+    newArrivals,
+    loading,
+    error,
+    setNewArrivals,
+    setLoading,
+    setError,
+    likedProducts,
+    setLikedProducts,
+  } = useApiStore();
   const [isMounted, setIsMounted] = useState(true); // Ensure component is mounted
 
   const fetchNewArrivalsData = async () => {
@@ -25,9 +34,10 @@ const NewArrivals = () => {
         {
           method: "GET",
           headers: {
-            'X-RapidAPI-Key': '4c6fe536b5mshc3ff65ebf0c23b9p1faa7djsn653e0d21fb96',
-            'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com'
-          }
+            "X-RapidAPI-Key":
+              "06832540c9msh0dcb7cb770bcbf6p1cc6b7jsn22fae4472ec8",
+            "X-RapidAPI-Host": "real-time-product-search.p.rapidapi.com",
+          },
         }
       );
 
@@ -72,22 +82,44 @@ const NewArrivals = () => {
     // Otherwise, return the entire title
     return title;
   };
- 
+
+  const toggleLike = (productId) => {
+    setLikedProducts((prevLikedProducts) => {
+      if (prevLikedProducts.includes(productId)) {
+        // If product ID already exists, remove it
+        return prevLikedProducts.filter((id) => id !== productId);
+      } else {
+        // If product ID doesn't exist, add it
+        return [...prevLikedProducts, productId];
+      }
+    });
+  };
+
+  console.log(likedProducts)
 
   return (
     <SafeAreaView>
       <View className="mt-6 flex flex-1 justify-between flex-row">
         <Text className="text-xl font-bold">New Arrivals</Text>
-        <Text style={{ color: "#5B9EE1" }} onPress={()=>navigation.navigate('See')} >See All</Text>
+        <Text
+          style={{ color: "#5B9EE1" }}
+          onPress={() => navigation.navigate("See")}
+        >
+          See All
+        </Text>
       </View>
-     <View className="mt-6 ">
+      <View className="mt-6 ">
         {newArrivals?.data &&
           newArrivals.data.map((item, index) => (
-             <View
+            <View
               key={index}
-              className="bg-white rounded-lg flex flex-row my-2 items-center justify-between"
+              className="bg-white rounded-lg flex flex-row my-2 items-center justify-around"
             >
-              <TouchableOpacity  onPress={() => navigation.navigate("Details", { productId: item.product_id })}>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("Details", { productId: item.product_id })
+                }
+              >
                 <View className="flex flex-row ">
                   <View>
                     <Text
@@ -115,12 +147,26 @@ const NewArrivals = () => {
                       style={{ width: 100, height: 100 }}
                     />
                   </View>
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => toggleLike(item.product_id)}
+                    >
+                      <View className="bg-white rounded-3xl p-4 flex justify-center align-bottom ml-8">
+                      <Icons
+                        name={likedProducts.product_id ? "heart" : "heart-o"}
+                        size={20}
+                        color={likedProducts.product_id ? "red" : "#808080"}
+                      />
+                      </View>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </TouchableOpacity>
             </View>
           ))}
       </View>
     </SafeAreaView>
+    
   );
 };
 

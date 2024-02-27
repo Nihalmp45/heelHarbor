@@ -1,38 +1,49 @@
-import React, { useState, useEffect } from "react";
 import {
-  View,
   Text,
+  View,
   ActivityIndicator,
+  ScrollView,
   TouchableOpacity,
   Image,
-  ScrollView,
 } from "react-native";
+import React, { useState, useEffect } from "react";
 import useApiStore from "../Zustand/store";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
-const NewArrivals = () => {
+const SearchPage = ({ route }) => {
+  const { searchTerm } = route.params;
+
   const navigation = useNavigation();
-  const { seeAll, loading, error, setSeeAll, setLoading, setError } =
-    useApiStore();
+  const {
+    searchProducts,
+    loading,
+    error,
+    setSearchProducts,
+    setLoading,
+    setError,
+  } = useApiStore();
   const [isMounted, setIsMounted] = useState(true); // Ensure component is mounted
 
-  const fetchNewArrivalsData = async () => {
+  const fetchSearchPageData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        "https://real-time-product-search.p.rapidapi.com/search?q=shoes&page=5",
+      const response = await axios.get(
+        "https://real-time-product-search.p.rapidapi.com/search",
         {
-          method: "GET",
           headers: {
             'X-RapidAPI-Key': '06832540c9msh0dcb7cb770bcbf6p1cc6b7jsn22fae4472ec8',
             'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com'
           },
+          params: {
+            q: searchTerm,
+          },
         }
       );
 
-      const data = await response.json();
+      const data = await response.data;
       if (isMounted) {
-        setSeeAll(data);
+        setSearchProducts(data);
       }
     } catch (error) {
       if (isMounted) {
@@ -46,7 +57,7 @@ const NewArrivals = () => {
   };
 
   useEffect(() => {
-    fetchNewArrivalsData(); // Fetch data when component mounts
+    fetchSearchPageData(); // Fetch data when component mounts
     return () => {
       // Cleanup function to set isMounted to false when component unmounts
       setIsMounted(false);
@@ -61,6 +72,9 @@ const NewArrivals = () => {
     return <Text>Error: {error}</Text>;
   }
 
+ 
+
+  
   const extractBrandAndModel = (title) => {
     // Split title by space or hyphen
     const parts = title.split(/\s|-/);
@@ -78,8 +92,8 @@ const NewArrivals = () => {
         <Text className="text-xl font-bold">All Products</Text>
       </View>
       <View className="mt-2 ">
-        {seeAll?.data &&
-          seeAll.data.map((item, index) => (
+        {searchProducts?.data &&
+          searchProducts.data.map((item, index) => (
             <View
               key={index}
               className="bg-white rounded-lg flex flex-row my-2"
@@ -101,8 +115,9 @@ const NewArrivals = () => {
                       className="mx-4 text-xl font-bold mt-2"
                       numberOfLines={1}
                     >
-                      {extractBrandAndModel(item.product_title)}
+                     {extractBrandAndModel(item.product_title)}
                     </Text>
+
                     {item.typical_price_range &&
                       item.typical_price_range[0] && (
                         <Text className="italic mx-4 my-4 text-lg font-bold mt-2">
@@ -125,4 +140,4 @@ const NewArrivals = () => {
   );
 };
 
-export default NewArrivals;
+export default SearchPage;
