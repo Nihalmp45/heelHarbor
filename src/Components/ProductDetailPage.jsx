@@ -9,10 +9,39 @@ import {
   ScrollView,
 } from "react-native";
 import Icons from "react-native-vector-icons/FontAwesome";
+import useApiStore from "../Zustand/store";
+import { useNavigation } from "@react-navigation/native";
 
 const ProductDetailsPage = ({ route }) => {
   const { productId } = route.params;
   const [productDetails, setProductDetails] = useState(null);
+  const { cartProducts, setCartProducts } = useApiStore();
+  const navigation = useNavigation();
+
+  const addToCart = (productId) => {
+    const copyCartProducts = [...cartProducts];
+    const existingProductIndex = copyCartProducts.findIndex(
+      (item) => item.id === productId
+    );
+
+    // If the product is not in the cart, add it
+    if (existingProductIndex === -1) {
+      // Here, directly use properties of productDetails
+      copyCartProducts.push({
+        id: productId,
+        title: productDetails.product_title,
+        prize: productDetails.typical_price_range[0],
+        image: productDetails.product_photos[0],
+      });
+      setCartProducts(copyCartProducts);
+    } else {
+      console.log("Product already exists in cart");
+    }
+    setCartProducts(copyCartProducts);
+   
+  };
+
+ 
 
   useEffect(() => {
     fetchProductDetails();
@@ -24,7 +53,7 @@ const ProductDetailsPage = ({ route }) => {
         "https://real-time-product-search.p.rapidapi.com/product-details",
         {
           headers: {
-            'X-RapidAPI-Key': '06832540c9msh0dcb7cb770bcbf6p1cc6b7jsn22fae4472ec8',
+            'X-RapidAPI-Key': '3aaf7aa29emsh11ed616927f1960p1234ecjsn5bf36a407ca3',
             'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com'
           },
           params: {
@@ -40,14 +69,17 @@ const ProductDetailsPage = ({ route }) => {
   };
 
   if (!productDetails) {
-    return <ActivityIndicator className='mt-24'/>;
+    return <ActivityIndicator className="mt-24" />;
   }
 
   return (
     <ScrollView>
       <View>
         <View className="mx-5 my-10">
-          <TouchableOpacity className='flex justify-end items-end'>
+          <TouchableOpacity
+            className="flex justify-end items-end"
+            onPress={() => navigation.navigate("Cart")}
+          >
             <View className=" bg-white rounded-3xl p-4">
               <Icons name="shopping-cart" size={24} />
             </View>
@@ -78,7 +110,10 @@ const ProductDetailsPage = ({ route }) => {
             <Text className="text-black font-bold text-3xl">
               {productDetails?.typical_price_range?.[0]}
             </Text>
-            <TouchableOpacity className=" bg-blue-400 p-5 rounded-3xl">
+            <TouchableOpacity
+              className=" bg-blue-400 p-5 rounded-3xl"
+              onPress={() => addToCart(productDetails?.product_id)}
+            >
               <Text className="text-white text-xl ">Add To Cart</Text>
             </TouchableOpacity>
           </View>

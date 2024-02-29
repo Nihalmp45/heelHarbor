@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import Icons from "react-native-vector-icons/FontAwesome";
 
 const MainPageContent = () => {
   const navigation = useNavigation();
+
   const {
     popularShoes,
     loading,
@@ -33,7 +34,7 @@ const MainPageContent = () => {
           {
             headers: {
               "X-RapidAPI-Key":
-                "06832540c9msh0dcb7cb770bcbf6p1cc6b7jsn22fae4472ec8",
+                "3aaf7aa29emsh11ed616927f1960p1234ecjsn5bf36a407ca3",
               "X-RapidAPI-Host": "real-time-product-search.p.rapidapi.com",
             },
           }
@@ -64,17 +65,59 @@ const MainPageContent = () => {
     return title;
   };
 
-  const toggleLike = (product) => {
-    product.quantity = 1;
+  const addToFavorite = (productId) => {
+    const copyFavorites = [...likedProducts];
+    const index = copyFavorites.findIndex((item) => item.id === productId);
 
-    setLikedProducts((prevCart) => ({
-      ...prevCart,
-      [product.id]: product,
-    }));
+    if (index === -1) {
+      const getCurrentProduct = popularShoes?.data?.find(
+        (item) => item.product_id === productId
+      );
+      if (getCurrentProduct) {
+        copyFavorites.push({
+          id: getCurrentProduct.product_id,
+          title: getCurrentProduct?.product_title,
+          prize: getCurrentProduct?.typical_price_range[0],
+          image: getCurrentProduct?.product_photos[0],
+        });
+      }
+    } else {
+      // If the item is already in likedProducts, remove it
+      copyFavorites.splice(index, 1);
+    }
+
+    // Update likedProducts after all modifications are done
+    setLikedProducts(copyFavorites);
   };
 
   return (
     <>
+      <View className="flex flex-row justify-between items-center my-5 ">
+        <TouchableOpacity onPress={()=>navigation.navigate('Crocs')}>
+          <Image
+            source={require("../../assets/Images/crocs.png")}
+            style={{ width: 65, height: 70 }}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={()=>navigation.navigate('Adidas')}>
+          <Image
+            source={require("../../assets/Images/adidas.png")}
+            style={{ width: 70, height: 50 }}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={()=>navigation.navigate('Nike')}>
+          <Image
+            source={require("../../assets/Images/nike.png")}
+            style={{ width: 65, height: 50 }}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={()=>navigation.navigate('NewBalance')}>
+          <Image
+            source={require("../../assets/Images/newbalance.png")}
+            style={{ width: 65, height: 50 }}
+          />
+        </TouchableOpacity>
+      </View>
       <View className="mt-6 flex flex-1 justify-between flex-row">
         <Text className="text-xl font-bold">Popular Shoes</Text>
         <Text
@@ -87,7 +130,7 @@ const MainPageContent = () => {
       <View className="mt-6 ">
         <FlatList
           horizontal
-          data={popularShoes?.data || []}
+          data={popularShoes?.data || []} // Provide default value of an empty array
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <View className="bg-white rounded-lg flex flex-row mx-2 ">
@@ -97,17 +140,17 @@ const MainPageContent = () => {
                 }
               >
                 <View>
-                  <TouchableOpacity onPress={() => toggleLike(item)}>
+                  <TouchableOpacity
+                    onPress={() => addToFavorite(item.product_id)}
+                  >
                     <View className="bg-white rounded-3xl p-4 flex align-bottom">
-                      <Icons
-                        name={
-                          likedProducts[item.product_id] ? "heart" : "heart-o"
-                        }
-                        size={20}
-                        color={
-                          likedProducts[item.product_id] ? "red" : "#808080"
-                        }
-                      />
+                      {likedProducts.some(
+                        (product) => product.id === item.product_id
+                      ) ? (
+                        <Icons name="heart" size={20} color="#FF0000" />
+                      ) : (
+                        <Icons name="heart-o" size={20} color="black" />
+                      )}
                     </View>
                   </TouchableOpacity>
                 </View>

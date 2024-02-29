@@ -1,27 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
   ActivityIndicator,
   TouchableOpacity,
   Image,
+  FlatList,
+  SafeAreaView,
   ScrollView,
 } from "react-native";
 import useApiStore from "../Zustand/store";
 import { useNavigation } from "@react-navigation/native";
 import Icons from "react-native-vector-icons/FontAwesome";
 
-const SeeAll = () => {
+const AdidasPage = () => {
   const navigation = useNavigation();
-  const { seeAll, loading, error, setSeeAll, setLoading, setError,likedProducts, setLikedProducts } =
+  const { newArrivals, loading, error, setNewArrivals, setLoading, setError, likedProducts, setLikedProducts } =
     useApiStore();
   const [isMounted, setIsMounted] = useState(true); // Ensure component is mounted
+
 
   const fetchNewArrivalsData = async () => {
     setLoading(true);
     try {
       const response = await fetch(
-        "https://real-time-product-search.p.rapidapi.com/search?q=shoes&page=5",
+        "https://real-time-product-search.p.rapidapi.com/search?q=adidas&page=5",
         {
           method: "GET",
           headers: {
@@ -33,7 +36,7 @@ const SeeAll = () => {
 
       const data = await response.json();
       if (isMounted) {
-        setSeeAll(data);
+        setNewArrivals(data);
       }
     } catch (error) {
       if (isMounted) {
@@ -55,7 +58,7 @@ const SeeAll = () => {
   }, []); // Empty dependency array ensures useEffect runs only once when component mounts
 
   if (loading) {
-    return <ActivityIndicator className="mt-24" />;
+    return <ActivityIndicator className="mt-5" />;
   }
 
   if (error) {
@@ -73,13 +76,12 @@ const SeeAll = () => {
     return title;
   };
 
-
   const addToFavorite = (productId) => {
     const copyFavorites = [...likedProducts];
     const index = copyFavorites.findIndex((item) => item.id === productId);
 
     if (index === -1) {
-      const getCurrentProduct = seeAll?.data?.find(
+      const getCurrentProduct = newArrivals?.data?.find(
         (item) => item.product_id === productId
       );
       if (getCurrentProduct) {
@@ -101,23 +103,23 @@ const SeeAll = () => {
   };
 
   return (
-    <ScrollView className="mx-4">
-      <View className="mt-10">
-        <Text className="text-xl font-bold">All Products</Text>
+    <ScrollView>
+    <SafeAreaView>
+      <View className="mt-6 flex flex-1 justify-between flex-row">
       </View>
-      <View className="mt-2 ">
-        {seeAll?.data &&
-          seeAll.data.map((item, index) => (
+      <View className="mt-6 ">
+        {newArrivals?.data &&
+          newArrivals.data.map((item, index) => (
             <View
               key={index}
-              className="bg-white rounded-lg flex flex-row my-2"
+              className="bg-white rounded-lg flex flex-row my-2 items-center justify-around"
             >
               <TouchableOpacity
                 onPress={() =>
                   navigation.navigate("Details", { productId: item.product_id })
                 }
               >
-                <View className="flex flex-row justify-between">
+                <View className="flex flex-row ">
                   <View>
                     <Text
                       className="mx-4 text-md mt-4"
@@ -162,8 +164,9 @@ const SeeAll = () => {
             </View>
           ))}
       </View>
+    </SafeAreaView>
     </ScrollView>
   );
 };
 
-export default SeeAll;
+export default AdidasPage;

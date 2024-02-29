@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -14,17 +14,10 @@ import Icons from "react-native-vector-icons/FontAwesome";
 
 const NewArrivals = () => {
   const navigation = useNavigation();
-  const {
-    newArrivals,
-    loading,
-    error,
-    setNewArrivals,
-    setLoading,
-    setError,
-    likedProducts,
-    setLikedProducts,
-  } = useApiStore();
+  const { newArrivals, loading, error, setNewArrivals, setLoading, setError, likedProducts, setLikedProducts } =
+    useApiStore();
   const [isMounted, setIsMounted] = useState(true); // Ensure component is mounted
+
 
   const fetchNewArrivalsData = async () => {
     setLoading(true);
@@ -34,9 +27,8 @@ const NewArrivals = () => {
         {
           method: "GET",
           headers: {
-            "X-RapidAPI-Key":
-              "06832540c9msh0dcb7cb770bcbf6p1cc6b7jsn22fae4472ec8",
-            "X-RapidAPI-Host": "real-time-product-search.p.rapidapi.com",
+            'X-RapidAPI-Key': '3aaf7aa29emsh11ed616927f1960p1234ecjsn5bf36a407ca3',
+            'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com'
           },
         }
       );
@@ -83,19 +75,31 @@ const NewArrivals = () => {
     return title;
   };
 
-  const toggleLike = (productId) => {
-    setLikedProducts((prevLikedProducts) => {
-      if (prevLikedProducts.includes(productId)) {
-        // If product ID already exists, remove it
-        return prevLikedProducts.filter((id) => id !== productId);
-      } else {
-        // If product ID doesn't exist, add it
-        return [...prevLikedProducts, productId];
-      }
-    });
-  };
+  const addToFavorite = (productId) => {
+    const copyFavorites = [...likedProducts];
+    const index = copyFavorites.findIndex((item) => item.id === productId);
 
-  console.log(likedProducts)
+    if (index === -1) {
+      const getCurrentProduct = newArrivals?.data?.find(
+        (item) => item.product_id === productId
+      );
+      if (getCurrentProduct) {
+        copyFavorites.push({
+          id: getCurrentProduct.product_id,
+          title: getCurrentProduct?.product_title,
+          prize: getCurrentProduct?.typical_price_range[0],
+          image: getCurrentProduct?.product_photos[0]
+        });
+      }
+    } else {
+      // If the item is already in likedProducts, remove it
+      copyFavorites.splice(index, 1);
+    }
+
+    // Update likedProducts after all modifications are done
+    setLikedProducts(copyFavorites);
+
+  };
 
   return (
     <SafeAreaView>
@@ -148,15 +152,15 @@ const NewArrivals = () => {
                     />
                   </View>
                   <View>
-                    <TouchableOpacity
-                      onPress={() => toggleLike(item.product_id)}
-                    >
-                      <View className="bg-white rounded-3xl p-4 flex justify-center align-bottom ml-8">
-                      <Icons
-                        name={likedProducts.product_id ? "heart" : "heart-o"}
-                        size={20}
-                        color={likedProducts.product_id ? "red" : "#808080"}
-                      />
+                    <TouchableOpacity onPress={() => addToFavorite(item.product_id)}>
+                      <View className="bg-white rounded-3xl p-4 flex align-bottom">
+                        {likedProducts.some(
+                          (product) => product.id === item.product_id
+                        ) ? (
+                          <Icons name="heart" size={20} color="#FF0000" />
+                        ) : (
+                          <Icons name="heart-o" size={20} color="black" />
+                        )}
                       </View>
                     </TouchableOpacity>
                   </View>
@@ -166,7 +170,6 @@ const NewArrivals = () => {
           ))}
       </View>
     </SafeAreaView>
-    
   );
 };
 
