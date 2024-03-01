@@ -33,9 +33,8 @@ const MainPageContent = () => {
           "https://real-time-product-search.p.rapidapi.com/search?q=shoes",
           {
             headers: {
-              "X-RapidAPI-Key":
-                "3aaf7aa29emsh11ed616927f1960p1234ecjsn5bf36a407ca3",
-              "X-RapidAPI-Host": "real-time-product-search.p.rapidapi.com",
+              'X-RapidAPI-Key': '34861748c4mshf3ebacfa17fc61fp145faajsna8ee6f68fbb2',
+              'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com'
             },
           }
         );
