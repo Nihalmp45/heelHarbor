@@ -10,6 +10,7 @@ import React, { useState, useEffect } from "react";
 import useApiStore from "../Zustand/store";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+import Icons from "react-native-vector-icons/FontAwesome";
 
 const SearchPage = ({ route }) => {
   const { searchTerm } = route.params;
@@ -22,6 +23,8 @@ const SearchPage = ({ route }) => {
     setSearchProducts,
     setLoading,
     setError,
+    likedProducts,
+    setLikedProducts
   } = useApiStore();
   const [isMounted, setIsMounted] = useState(true); // Ensure component is mounted
 
@@ -32,8 +35,9 @@ const SearchPage = ({ route }) => {
         "https://real-time-product-search.p.rapidapi.com/search",
         {
           headers: {
-            'X-RapidAPI-Key': '34861748c4mshf3ebacfa17fc61fp145faajsna8ee6f68fbb2',
-            'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com'
+            "X-RapidAPI-Key":
+              "dd166fe5c3msha314b784f7de628p1185dajsn0e073a4419d5",
+            "X-RapidAPI-Host": "real-time-product-search.p.rapidapi.com",
           },
           params: {
             q: searchTerm,
@@ -72,9 +76,6 @@ const SearchPage = ({ route }) => {
     return <Text>Error: {error}</Text>;
   }
 
- 
-
-  
   const extractBrandAndModel = (title) => {
     // Split title by space or hyphen
     const parts = title.split(/\s|-/);
@@ -84,6 +85,32 @@ const SearchPage = ({ route }) => {
     }
     // Otherwise, return the entire title
     return title;
+  };
+
+  const addToFavorite = (productId) => {
+    const copyFavorites = [...likedProducts];
+    const index = copyFavorites.findIndex((item) => item.id === productId);
+
+    if (index === -1) {
+      const getCurrentProduct = searchProducts?.data?.find(
+        (item) => item.product_id === productId
+      );
+      if (getCurrentProduct) {
+        copyFavorites.push({
+          id: getCurrentProduct.product_id,
+          title: getCurrentProduct?.product_title,
+          prize: getCurrentProduct?.typical_price_range[0],
+          image: getCurrentProduct?.product_photos[0]
+        });
+      }
+    } else {
+      // If the item is already in likedProducts, remove it
+      copyFavorites.splice(index, 1);
+    }
+
+    // Update likedProducts after all modifications are done
+    setLikedProducts(copyFavorites);
+
   };
 
   return (
@@ -115,7 +142,7 @@ const SearchPage = ({ route }) => {
                       className="mx-4 text-xl font-bold mt-2"
                       numberOfLines={1}
                     >
-                     {extractBrandAndModel(item.product_title)}
+                      {extractBrandAndModel(item.product_title)}
                     </Text>
 
                     {item.typical_price_range &&
@@ -130,6 +157,21 @@ const SearchPage = ({ route }) => {
                       source={{ uri: item.product_photos[0] }}
                       style={{ width: 100, height: 100 }}
                     />
+                  </View>
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => addToFavorite(item.product_id)}
+                    >
+                      <View className="bg-white rounded-3xl p-4 flex align-bottom">
+                        {likedProducts.some(
+                          (product) => product.id === item.product_id
+                        ) ? (
+                          <Icons name="heart" size={20} color="#FF0000" />
+                        ) : (
+                          <Icons name="heart-o" size={20} color="black" />
+                        )}
+                      </View>
+                    </TouchableOpacity>
                   </View>
                 </View>
               </TouchableOpacity>
