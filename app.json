@@ -4,13 +4,20 @@
     "slug": "heelHarbor",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.jpg",
     "userInterfaceStyle": "light",
-   
+    "supportsTablet": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.Nihal.heelharbor"
     },
     "android": {
       "package": "com.Nihal.heelharbor"

@@ -13,7 +13,7 @@ const MainPageHeader = () => {
 
   return (
     <View>
-      <View className="mt-14 flex flex-row ">
+      <View className="mt-6 flex flex-row ">
         <View className=" flex flex-row bg-white p-4 rounded-3xl align-middle justify-center">
           <Icons2 name="magnifying-glass" size={24} color={808080} />
           <TextInput

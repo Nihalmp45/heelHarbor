@@ -11,7 +11,6 @@ const CartPage = () => {
   const [updatedCartProducts, setUpdatedCartProducts] = useState(cartProducts);
   const navigation = useNavigation();
 
-  console.log("cartProducts:", cartProducts);
 
   const extractBrandAndModel = (title) => {
     const parts = title.split(/\s|-/);

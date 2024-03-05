@@ -27,7 +27,7 @@ const NewArrivals = () => {
         {
           method: "GET",
           headers: {
-            'X-RapidAPI-Key': 'dd166fe5c3msha314b784f7de628p1185dajsn0e073a4419d5',
+            'X-RapidAPI-Key': '34861748c4mshf3ebacfa17fc61fp145faajsna8ee6f68fbb2',
             'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com'
           },
         }
